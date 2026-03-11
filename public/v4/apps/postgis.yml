@@ -1,0 +1,75 @@
+captainVersion: 4
+
+services:
+    $$cap_appname-db:
+        image: postgis/postgis:$$cap_pg_version-$$cap_postgis_version
+        volumes:
+            - $$cap_appname-db-data:/var/lib/postgresql/data
+        restart: always
+        environment:
+            POSTGRES_USER: $$cap_pg_user
+            POSTGRES_PASSWORD: $$cap_pg_password
+            POSTGRES_DB: $$cap_pg_db
+            POSTGRES_INITDB_ARGS: $$cap_pg_initdb_args
+        caproverExtra:
+            notExposeAsWebApp: "true"
+
+caproverOneClickApp:
+    variables:
+        - id: $$cap_pg_version
+          label: PostgreSQL Version
+          defaultValue: "16"
+          description: Version majeure de PostgreSQL (ex 16, 15, 14).
+          validRegex: /^\d+$/
+        - id: $$cap_postgis_version
+          label: PostGIS Version
+          defaultValue: "3.5"
+          description: Version de PostGIS (ex 3.5, 3.4).
+          validRegex: /^\d+\.\d+$/
+        - id: $$cap_pg_user
+          label: PostgreSQL User
+          defaultValue: postgres
+          validRegex: /^[a-zA-Z][a-zA-Z0-9_]+$/
+        - id: $$cap_pg_password
+          label: PostgreSQL Password
+          defaultValue: $$cap_gen_random_hex(16)
+          description: Mot de passe pour l'utilisateur PostgreSQL.
+          validRegex: /.{8,}/
+        - id: $$cap_pg_db
+          label: Database Name
+          defaultValue: postgres
+          validRegex: /^[a-zA-Z][a-zA-Z0-9_]+$/
+        - id: $$cap_pg_initdb_args
+          label: INITDB Arguments (optional)
+          description: Extra initdb args. --data-checksums recommended for future Patroni replication.
+          defaultValue: "--data-checksums"
+    instructions:
+        start: >-
+            PostgreSQL with PostGIS extension pre-installed.
+            Uses the official postgis/postgis image.
+            --data-checksums is enabled by default for future Patroni HA compatibility.
+        end: >-
+            PostgreSQL + PostGIS is deployed!
+
+
+            **Internal connection:**
+
+            - Host: srv-captain--$$cap_appname-db
+
+            - Port: 5432
+
+            - User: $$cap_pg_user
+
+            - Database: $$cap_pg_db
+
+
+            **Enable PostGIS:**
+
+            ```CREATE EXTENSION IF NOT EXISTS postgis;```
+
+
+            Data checksums are enabled by default for future Patroni HA.
+    displayName: PostgreSQL + PostGIS
+    description: PostgreSQL with the PostGIS spatial extension. Ready for future HA with Patroni.
+    isOfficial: false
+    documentation: https://registry.hub.docker.com/r/postgis/postgis
