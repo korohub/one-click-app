@@ -1,0 +1,11 @@
+{
+  "oneClickApps": [
+    {
+      "name": "postgis",
+      "displayName": "PostgreSQL + PostGIS",
+      "description": "PostgreSQL avec l'extension spatiale PostGIS. Prêt pour une future HA avec Patroni.",
+      "isOfficial": false,
+      "logoUrl": ""
+    }
+  ]
+}
