@@ -2,7 +2,7 @@ captainVersion: 4
 
 services:
     $$cap_appname-db:
-        image: postgis/postgis:$$cap_pg_version-$$cap_postgis_version
+        image: postgis/postgis:$$cap_postgis_tag
         volumes:
             - $$cap_appname-db-data:/var/lib/postgresql/data
         restart: always
@@ -16,16 +16,11 @@ services:
 
 caproverOneClickApp:
     variables:
-        - id: $$cap_pg_version
-          label: PostgreSQL Version
-          defaultValue: "16"
-          description: Version majeure de PostgreSQL (ex 17, 16, 15). Voir les tags disponibles sur https://hub.docker.com/r/postgis/postgis/tags
-          validRegex: /^\d+$/
-        - id: $$cap_postgis_version
-          label: PostGIS Version
-          defaultValue: "3.5"
-          description: Version de PostGIS (ex 3.5, 3.4). Voir les tags disponibles sur https://hub.docker.com/r/postgis/postgis/tags
-          validRegex: /^\d+\.\d+$/
+        - id: $$cap_postgis_tag
+          label: Image Tag (PostgreSQL-PostGIS)
+          defaultValue: "16-3.5"
+          description: "Tag de l'image postgis/postgis. Tags stables : 17-3.5, 16-3.5, 15-3.5, 14-3.5, 16-3.4, 15-3.4, 14-3.4. Tous les tags : https://hub.docker.com/r/postgis/postgis/tags"
+          validRegex: /^[^\s]+$/
         - id: $$cap_pg_user
           label: PostgreSQL User
           defaultValue: postgres
