@@ -19,12 +19,12 @@ caproverOneClickApp:
         - id: $$cap_pg_version
           label: PostgreSQL Version
           defaultValue: "16"
-          description: Version majeure de PostgreSQL (ex 16, 15, 14).
+          description: Version majeure de PostgreSQL (ex 17, 16, 15). Voir les tags disponibles sur https://hub.docker.com/r/postgis/postgis/tags
           validRegex: /^\d+$/
         - id: $$cap_postgis_version
           label: PostGIS Version
           defaultValue: "3.5"
-          description: Version de PostGIS (ex 3.5, 3.4).
+          description: Version de PostGIS (ex 3.5, 3.4). Voir les tags disponibles sur https://hub.docker.com/r/postgis/postgis/tags
           validRegex: /^\d+\.\d+$/
         - id: $$cap_pg_user
           label: PostgreSQL User
