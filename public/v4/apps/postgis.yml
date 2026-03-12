@@ -64,6 +64,39 @@ caproverOneClickApp:
 
 
             Data checksums are enabled by default for future Patroni HA.
+
+
+            ---
+
+
+            **Performance Tuning (via SQL):**
+
+
+            Les valeurs par defaut de PostgreSQL sont tres conservatrices.
+            Utilisez PGTune pour calculer les valeurs optimales selon votre serveur :
+            https://pgtune.leopard.in.ua/
+
+
+            Puis appliquez-les avec ALTER SYSTEM (pas besoin de toucher aux fichiers de config) :
+
+
+            ```ALTER SYSTEM SET shared_buffers = '256MB';```
+
+            ```ALTER SYSTEM SET effective_cache_size = '768MB';```
+
+            ```ALTER SYSTEM SET work_mem = '16MB';```
+
+            ```ALTER SYSTEM SET maintenance_work_mem = '128MB';```
+
+            ```ALTER SYSTEM SET random_page_cost = 1.1;```
+
+            ```ALTER SYSTEM SET wal_buffers = '16MB';```
+
+            ```SELECT pg_reload_conf();```
+
+
+            Les parametres shared_buffers et max_connections necessitent un redemarrage du conteneur.
+            Les autres sont appliques immediatement avec pg_reload_conf().
     displayName: PostgreSQL + PostGIS
     description: PostgreSQL with the PostGIS spatial extension. Ready for future HA with Patroni.
     isOfficial: false
