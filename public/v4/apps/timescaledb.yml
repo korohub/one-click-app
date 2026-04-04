@@ -1,0 +1,118 @@
+captainVersion: 4
+
+services:
+    $$cap_appname:
+        image: timescale/timescaledb:$$cap_timescaledb_tag
+        volumes:
+            - $$cap_appname-data:/home/postgres/pgdata/data
+        restart: always
+        environment:
+            POSTGRES_USER: $$cap_pg_user
+            POSTGRES_PASSWORD: $$cap_pg_password
+            POSTGRES_DB: $$cap_pg_db
+            POSTGRES_INITDB_ARGS: $$cap_pg_initdb_args
+        caproverExtra:
+            notExposeAsWebApp: "true"
+
+caproverOneClickApp:
+    variables:
+        - id: $$cap_timescaledb_tag
+          label: Image Tag (TimescaleDB)
+          defaultValue: "latest-pg17"
+          description: "Tag de l'image timescale/timescaledb. Tags stables : latest-pg17, latest-pg16, latest-pg15, latest-pg14. Tous les tags : https://hub.docker.com/r/timescale/timescaledb/tags"
+          validRegex: /^[^\s]+$/
+        - id: $$cap_pg_user
+          label: PostgreSQL User
+          defaultValue: postgres
+          validRegex: /^[a-zA-Z][a-zA-Z0-9_]+$/
+        - id: $$cap_pg_password
+          label: PostgreSQL Password
+          defaultValue: $$cap_gen_random_hex(16)
+          description: Mot de passe pour l'utilisateur PostgreSQL.
+          validRegex: /.{8,}/
+        - id: $$cap_pg_db
+          label: Database Name
+          defaultValue: analytics
+          validRegex: /^[a-zA-Z][a-zA-Z0-9_]+$/
+        - id: $$cap_pg_initdb_args
+          label: INITDB Arguments (optional)
+          description: Extra initdb args. --data-checksums recommended.
+          defaultValue: "--data-checksums"
+    instructions:
+        start: >-
+            TimescaleDB - base de donnees temporelle basee sur PostgreSQL.
+            Utilise l'image officielle timescale/timescaledb.
+            Ideal pour l'analytics, le monitoring et les donnees de series temporelles.
+        end: >-
+            TimescaleDB est deploye !
+
+
+            **Connexion interne :**
+
+            - Host: srv-captain--$$cap_appname
+
+            - Port: 5432
+
+            - User: $$cap_pg_user
+
+            - Database: $$cap_pg_db
+
+
+            **Activer TimescaleDB :**
+
+            ```CREATE EXTENSION IF NOT EXISTS timescaledb;```
+
+
+            **Creer une hypertable :**
+
+            ```CREATE TABLE events (time TIMESTAMPTZ NOT NULL, site_id INT, data JSONB);```
+
+            ```SELECT create_hypertable('events', 'time');```
+
+
+            ---
+
+
+            **Performance Tuning (via SQL) :**
+
+
+            TimescaleDB recommande d'utiliser timescaledb-tune pour optimiser les parametres.
+            Sinon, appliquez manuellement via ALTER SYSTEM :
+
+
+            ```ALTER SYSTEM SET shared_buffers = '256MB';```
+
+            ```ALTER SYSTEM SET effective_cache_size = '768MB';```
+
+            ```ALTER SYSTEM SET work_mem = '16MB';```
+
+            ```ALTER SYSTEM SET maintenance_work_mem = '256MB';```
+
+            ```ALTER SYSTEM SET random_page_cost = 1.1;```
+
+            ```ALTER SYSTEM SET wal_buffers = '16MB';```
+
+            ```ALTER SYSTEM SET timescaledb.max_background_workers = 8;```
+
+            ```SELECT pg_reload_conf();```
+
+
+            Les parametres shared_buffers et max_connections necessitent un redemarrage du conteneur.
+            Les autres sont appliques immediatement avec pg_reload_conf().
+
+
+            ---
+
+
+            **Politique de retention (optionnel) :**
+
+            ```SELECT add_retention_policy('events', INTERVAL '30 days');```
+
+
+            **Agregation continue (optionnel) :**
+
+            ```CREATE MATERIALIZED VIEW events_hourly WITH (timescaledb.continuous) AS SELECT time_bucket('1 hour', time) AS bucket, site_id, count(*) FROM events GROUP BY bucket, site_id;```
+    displayName: TimescaleDB
+    description: TimescaleDB - base de donnees temporelle basee sur PostgreSQL. Optimisee pour les series temporelles et l'analytics.
+    isOfficial: false
+    documentation: https://hub.docker.com/r/timescale/timescaledb
