@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:hub.docker.com)",
+      "WebFetch(domain:labs.mysql.com)",
+      "Bash(curl -sL -o /home/david/Documents/perso/windsurf/one-click-app/public/v4/logos/mysql57.png \"https://hub.docker.com/api/content/v1/products/images/mysql\")",
+      "Bash(curl -sL -o /tmp/mysql_logo_test.svg \"https://www.mysql.com/common/logos/logo-mysql-170x115.png\")"
+    ]
+  }
+}

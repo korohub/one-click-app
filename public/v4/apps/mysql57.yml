@@ -1,0 +1,78 @@
+captainVersion: 4
+
+services:
+    $$cap_appname:
+        image: mysql:$$cap_mysql_tag
+        volumes:
+            - $$cap_appname-data:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: $$cap_mysql_root_password
+            MYSQL_DATABASE: $$cap_mysql_db
+            MYSQL_USER: $$cap_mysql_user
+            MYSQL_PASSWORD: $$cap_mysql_password
+        caproverExtra:
+            notExposeAsWebApp: "true"
+
+caproverOneClickApp:
+    variables:
+        - id: $$cap_mysql_tag
+          label: Image Tag (MySQL)
+          defaultValue: "5.7"
+          description: "Tag de l'image mysql. Version recommandee : 5.7. Tous les tags : https://hub.docker.com/_/mysql/tags"
+          validRegex: /^[^\s]+$/
+        - id: $$cap_mysql_root_password
+          label: MySQL Root Password
+          defaultValue: $$cap_gen_random_hex(16)
+          description: Mot de passe root pour MySQL.
+          validRegex: /.{8,}/
+        - id: $$cap_mysql_db
+          label: Database Name
+          defaultValue: mydb
+          validRegex: /^[a-zA-Z][a-zA-Z0-9_]+$/
+        - id: $$cap_mysql_user
+          label: MySQL User
+          defaultValue: myuser
+          description: Utilisateur non-root pour la base de donnees.
+          validRegex: /^[a-zA-Z][a-zA-Z0-9_]+$/
+        - id: $$cap_mysql_password
+          label: MySQL User Password
+          defaultValue: $$cap_gen_random_hex(16)
+          description: Mot de passe pour l'utilisateur MySQL.
+          validRegex: /.{8,}/
+    instructions:
+        start: >-
+            MySQL 5.7 - serveur de base de donnees relationnelle.
+            Utilise l'image officielle mysql:5.7.
+            Ideal pour les applications necessitant une compatibilite avec MySQL 5.7.
+        end: >-
+            MySQL 5.7 est deploye !
+
+
+            **Connexion interne :**
+
+            - Host: srv-captain--$$cap_appname
+
+            - Port: 3306
+
+            - User: $$cap_mysql_user
+
+            - Database: $$cap_mysql_db
+
+
+            **Connexion root :**
+
+            - User: root
+
+            - Password: $$cap_mysql_root_password
+
+
+            ---
+
+
+            **Note :** MySQL 5.7 a atteint sa fin de vie (EOL) en octobre 2023.
+            Envisagez une migration vers MySQL 8.0+ quand possible.
+    displayName: MySQL 5.7
+    description: MySQL 5.7 - serveur de base de donnees relationnelle. Compatible avec les applications necessitant MySQL 5.7.
+    isOfficial: false
+    documentation: https://hub.docker.com/_/mysql
